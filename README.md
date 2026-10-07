@@ -5,8 +5,8 @@ cloud, no API key, no per-token cost. It can read/write files, run commands, bro
 pull assets from GitHub, and create + push repos — like opencode.
 
 ## Install
-**Arch Linux:** `unzip ember.zip && cd ember && ./install.sh`
-**Windows (PowerShell):** `Expand-Archive ember.zip . ; cd ember ; .\install.ps1`
+**Arch Linux:** `unzip ember-master.zip && cd ember-master && ./install.sh`
+**Windows (PowerShell):** `Expand-Archive ember-master.zip . ; cd ember-master ; .\install.ps1`
 
 This installs the `ember` command, fetches the llama.cpp engine, and downloads the model
 (Qwen2.5-Coder-14B-Instruct Q5_K_M, ~10.5 GB) into `~/.local/share/ember` (Windows: `%LOCALAPPDATA%\ember`).
