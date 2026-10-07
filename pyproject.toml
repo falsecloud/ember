@@ -1,0 +1,16 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "ember-ai"
+version = "0.1.0"
+description = "Local coding agent: one-time model download, runs fully on your PC"
+requires-python = ">=3.9"
+dependencies = ["httpx>=0.25", "rich>=13", "prompt_toolkit>=3"]
+
+[project.scripts]
+ember = "ember.cli:main"
+
+[tool.setuptools]
+packages = ["ember"]
