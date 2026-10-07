@@ -79,11 +79,7 @@ def find_server_bin():
     return None
 
 
-def install_llama_cpp(cfg, console) -> Path:
-    console.print("[bold]Fetching llama.cpp inference engine[/] — one time only")
-    rel = httpx.get("https://api.github.com/repos/ggml-org/llama.cpp/releases/latest",
-                    timeout=30, follow_redirects=True)
-    rel.raise_for_status()
+def _pick_asset(assets, cfg):
     plat = "win" if os.name == "nt" else "ubuntu"
     bad = ("cudart", "cuda", "rocm", "hip", "sycl", "openvino", "arm", "opencl", "kleidi", "s390x")
 
@@ -92,14 +88,32 @@ def install_llama_cpp(cfg, console) -> Path:
         return (n.endswith((".zip", ".tar.gz")) and f"bin-{plat}" in n and "x64" in n
                 and not any(b in n for b in bad))
 
-    cands = [a for a in rel.json()["assets"] if ok(a)]
+    cands = [a for a in assets if ok(a)]
     vul = [a for a in cands if "vulkan" in a["name"].lower()]
     non = [a for a in cands if a not in vul]
     pick = (vul or non) if cfg["backend"] != "cpu" else (non or vul)
-    if not pick:
-        raise RuntimeError("No matching llama.cpp release asset. Install llama.cpp yourself "
-                           "(Arch: `yay -S llama.cpp-vulkan` or llama.cpp-cuda) so `llama-server` is on PATH.")
-    a = pick[0]
+    return pick[0] if pick else None
+
+
+def install_llama_cpp(cfg, console) -> Path:
+    console.print("[bold]Fetching llama.cpp inference engine[/] (~30 MB) — one time only")
+    hdr = {"User-Agent": "ember-agent", "Accept": "application/vnd.github+json"}
+    r = httpx.get("https://api.github.com/repos/ggml-org/llama.cpp/releases?per_page=20",
+                  headers=hdr, timeout=30, follow_redirects=True)
+    r.raise_for_status()
+    a = None
+    for rel in r.json():
+        if rel.get("draft"):
+            continue
+        a = _pick_asset(rel.get("assets", []), cfg)
+        if a:  # newest release that actually has a usable build attached
+            break
+    if not a:
+        raise RuntimeError(
+            "Couldn't find a prebuilt llama.cpp for your system. Download a "
+            "'bin-ubuntu-vulkan-x64' (Linux) or 'bin-win-vulkan-x64' (Windows) archive from "
+            "https://github.com/ggml-org/llama.cpp/releases, extract it into "
+            f"{config.data_dir() / 'llama.cpp'} and run `ember setup` again.")
     root = config.data_dir() / "llama.cpp"
     shutil.rmtree(root, ignore_errors=True)
     root.mkdir(parents=True)
