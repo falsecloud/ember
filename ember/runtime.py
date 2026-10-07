@@ -158,7 +158,7 @@ def ensure_server(cfg, console):
         model = ensure_model(cfg, console)
         p = config.preset(cfg)
         cmd = [str(binp), "-m", str(model), "--host", "127.0.0.1", "--port", str(port),
-               "-c", str(p["ctx"]), "-ngl", str(cfg["ngl"]), "-np", "1"]
+               "-c", str(p["ctx"]), "-np", "1"] + ([] if str(cfg.get("gpu_layers", "auto")) == "auto" else ["-ngl", str(cfg["gpu_layers"])])
         env = dict(os.environ)
         if os.name != "nt":
             env["LD_LIBRARY_PATH"] = str(binp.parent) + os.pathsep + env.get("LD_LIBRARY_PATH", "")

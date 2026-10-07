@@ -33,7 +33,7 @@ DEFAULTS = {
     "preset": "max",
     "port": 8484,
     "backend": "auto",   # auto/vulkan = GPU build, cpu = CPU-only build
-    "ngl": 99,           # layers offloaded to GPU (ignored on CPU builds)
+    "gpu_layers": "auto",  # "auto" fits the model to free VRAM; or a number
     "ctx": 0,            # 0 = preset default
     "github_token": "",
     "max_tokens": 3072,

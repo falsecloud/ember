@@ -25,8 +25,8 @@ The model server stays alive in the background between sessions, so restarts are
 ## Speed / hardware
 - Best: GPU with 12 GB+ VRAM (all layers offloaded). Windows works out of the box (Vulkan build). On Arch install `vulkan-icd-loader` + your GPU's Vulkan driver, or install `llama.cpp-cuda` / `llama.cpp-vulkan` from the AUR (Ember uses `llama-server` from PATH if present).
 - CPU only: the 14B model will be slow (a few tokens/s). Use `--preset lite`, and set `"backend": "cpu"` in `config.json` if the GPU build fails.
-- Less VRAM than 12 GB: lower `"ngl"` in `config.json` (partial offload) or use `lite`.
-- Config: `~/.local/share/ember/config.json` (port, ngl, ctx, max_tokens, preset).
+- Less VRAM than 12 GB: lower `"gpu_layers"` in `config.json` (partial offload) or use `lite`.
+- Config: `~/.local/share/ember/config.json` (port, gpu_layers, ctx, max_tokens, preset).
 
 ## Safety
 File writes, shell commands, downloads and GitHub pushes ask for approval (y / n / a=always). `/auto` toggles.
